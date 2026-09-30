@@ -1,0 +1,265 @@
+.section {
+  position: relative;
+  /* Scroll distance for the pinned stage. Long enough that the drive has
+     weight, short enough that it never feels like a hostage situation. */
+  height: 460vh;
+}
+
+.stage {
+  /* Owned by the stage, not the band: the car and the cards are siblings of
+     the band and position themselves against this same measure. */
+  --band-h: clamp(128px, min(27vh, 13.5vw), 320px);
+  /* Car size is its own token because the tyre tracks have to line up with the
+     wheels that laid them, at every breakpoint. */
+  --car-h: calc(var(--band-h) * 0.92);
+  /* Wheel centre offset from the car's centre line, as a fraction of its
+     rendered height (64 of the 212-unit viewBox). */
+  --axle: 0.321;
+
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* ---------------------------------------------------------------- track -- */
+
+.band {
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  height: var(--band-h);
+  translate: 0 -50%;
+  background: var(--track);
+  overflow: hidden;
+  contain: paint;
+}
+
+/* Lane markings on the road the car has not reached yet. */
+.laneAhead {
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  height: 2px;
+  translate: 0 -50%;
+  background: repeating-linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.16) 0 42px,
+    transparent 42px 90px
+  );
+}
+
+/* The paint the car lays down. Clipped rather than resized, so the headline
+   inside never reflows and the wipe stays on the compositor. */
+.reveal {
+  position: absolute;
+  inset: 0;
+  background: var(--green);
+  clip-path: inset(0 100% 0 0);
+  will-change: clip-path;
+}
+
+.tyreTrack {
+  position: absolute;
+  inset-inline: 0;
+  height: max(2px, calc(var(--car-h) * 0.07));
+  translate: 0 -50%;
+  background: rgba(0, 0, 0, 0.045);
+}
+
+.tyreTrack[data-lane="near"] {
+  top: calc(50% - var(--car-h) * var(--axle));
+}
+
+.tyreTrack[data-lane="far"] {
+  top: calc(50% + var(--car-h) * var(--axle));
+}
+
+.headline {
+  position: absolute;
+  left: 4.5%;
+  top: 50%;
+  translate: 0 -50%;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8.7vw, 14.8rem);
+  font-weight: 800;
+  line-height: 0.84;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.headline span {
+  display: inline;
+}
+
+.finish {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  --finish-w: clamp(22px, 1.9vw, 36px);
+
+  width: var(--finish-w);
+  background-image: repeating-conic-gradient(#101010 0 25%, #cfcfcf 0 50%);
+  background-size: var(--finish-w) var(--finish-w);
+  opacity: 0.62;
+}
+
+/* ------------------------------------------------------------------ car -- */
+
+.car {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: var(--car-h);
+  width: auto;
+  translate: 0 -50%;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.car svg,
+.car > svg {
+  display: block;
+  height: 100%;
+  width: auto;
+}
+
+.cue {
+  position: absolute;
+  left: 4.5%;
+  bottom: clamp(1.5rem, 4vh, 3rem);
+  margin: 0;
+  font-size: clamp(0.66rem, 0.78vw, 0.82rem);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+/* ---------------------------------------------------------------- cards -- */
+
+.card {
+  position: absolute;
+  left: calc(var(--x) * 100%);
+  width: clamp(158px, 18.5vw, 340px);
+  padding: clamp(0.85rem, 1.5vw, 1.6rem) clamp(0.9rem, 1.6vw, 1.75rem)
+    clamp(0.95rem, 1.7vw, 1.8rem);
+  border-radius: clamp(8px, 0.85vw, 16px);
+  background: var(--card-bg);
+  color: var(--card-fg);
+  opacity: 0;
+  will-change: transform, opacity, filter;
+}
+
+.card[data-side="top"] {
+  bottom: calc(50% + var(--band-h) / 2 + clamp(28px, 5.5vh, 88px));
+}
+
+.card[data-side="bottom"] {
+  top: calc(50% + var(--band-h) / 2 + clamp(28px, 5.5vh, 88px));
+}
+
+.cardValue {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3.1vw, 3.75rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+
+.cardLabel {
+  margin: clamp(0.45rem, 0.8vw, 0.85rem) 0 0;
+  font-size: clamp(0.72rem, 0.95vw, 1.05rem);
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+  text-wrap: balance;
+}
+
+/* ----------------------------------------------------------- responsive -- */
+
+@media (max-width: 860px) {
+  .section {
+    height: 380vh;
+  }
+
+  .stage {
+    --band-h: clamp(150px, min(38vh, 44vw), 340px);
+    --car-h: min(calc(var(--band-h) * 0.92), 27vw);
+  }
+
+  /* Two lines keeps the type big enough to carry the composition; the wipe
+     still reads because the reveal edge is vertical. */
+  .headline {
+    font-size: 16vw;
+    line-height: 0.9;
+    left: 5%;
+  }
+
+  .headline span {
+    display: block;
+  }
+
+  .card {
+    left: calc(var(--x-mobile) * 100%);
+    width: clamp(132px, 36vw, 200px);
+  }
+
+  /* The car is small relative to a band sized for two lines of headline, so
+     the marks would sit inside the type rather than under the wheels. */
+  .tyreTrack {
+    display: none;
+  }
+
+  .card[data-side="top"],
+  .card[data-side="bottom"] {
+    --card-gap: clamp(16px, 3vh, 34px);
+  }
+
+  .card[data-side="top"] {
+    bottom: calc(50% + var(--band-h) / 2 + var(--card-gap));
+  }
+
+  .card[data-side="bottom"] {
+    top: calc(50% + var(--band-h) / 2 + var(--card-gap));
+  }
+}
+
+/* ------------------------------------------------------- reduced motion -- */
+
+@media (prefers-reduced-motion: reduce) {
+  .section {
+    height: auto;
+  }
+
+  .stage {
+    height: 100svh;
+  }
+
+  .reveal {
+    clip-path: none;
+  }
+
+  .card {
+    opacity: 1;
+  }
+
+  .cue {
+    display: none;
+  }
+
+  /* Parked just past the finish, clear of the headline's last letter — the
+     composition still says "delivered" without hiding what it delivered. */
+  .car {
+    left: auto;
+    right: -12%;
+  }
+
+  .laneAhead {
+    display: none;
+  }
+}
