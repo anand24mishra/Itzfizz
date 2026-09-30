@@ -1,0 +1,74 @@
+/* Absolute, not fixed: a fixed bar over a full-bleed pinned stage collides
+   with the stat cards as they scroll past it. */
+.header {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: clamp(1rem, 2.4vh, 1.9rem) 4.5%;
+  pointer-events: none;
+}
+
+.wordmark {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(0.82rem, 1.05vw, 1.1rem);
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.caption {
+  margin: 0;
+  font-size: clamp(0.66rem, 0.8vw, 0.86rem);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--ink-muted);
+  text-align: right;
+}
+
+.closing {
+  padding: clamp(5rem, 16vh, 11rem) 4.5% clamp(3rem, 8vh, 5rem);
+}
+
+.closingText {
+  margin: 0;
+  font-family: var(--font-display);
+  /* `ch` resolves against this element's own display size, so the measure is
+     the ~38 characters a statement line wants, not a body measure. */
+  max-width: 38ch;
+  font-size: clamp(1.25rem, 2.6vw, 2.6rem);
+  font-weight: 600;
+  line-height: 1.16;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+}
+
+.closingText em {
+  font-style: normal;
+  color: var(--ink-soft);
+}
+
+.rule {
+  margin: clamp(2.5rem, 7vh, 4.5rem) 0 0;
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
+  justify-content: space-between;
+  padding: clamp(1rem, 2.5vh, 1.6rem) 4.5% clamp(2rem, 5vh, 3.5rem);
+  font-size: clamp(0.68rem, 0.8vw, 0.84rem);
+  color: var(--ink-muted);
+}
+
+.footer p {
+  margin: 0;
+}
